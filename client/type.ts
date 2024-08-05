@@ -3,7 +3,7 @@ export type Table = "cards" | "transactions";
 export interface Card {
   owner: string;
   nickname: string;
-  color: string;
+  balance: number;
   id: number;
 }
 
@@ -15,3 +15,9 @@ export interface Transaction {
   notes?: string;
   date: Date;
 }
+
+export type Method = "POST" | "GET" | "PUT" | "DELETE";
+export type AddCardError = {
+  to: string;
+  message: string;
+};
