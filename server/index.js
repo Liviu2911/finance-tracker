@@ -56,7 +56,6 @@ app.delete("/cards/:id", (req, res) => {
 
 app.put("/cards/:id", jp, (req, res) => {
   const { owner, nickname, balance, id } = req.body;
-  console.log(req.body);
   modules
     .editCard(owner, nickname, id, Number(balance))
     .then((data) => res.status(200).send(data))

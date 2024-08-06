@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { Card as CardType } from "../../type";
 import { GoGear } from "react-icons/go";
 import { LuTrash2 } from "react-icons/lu";
@@ -45,6 +45,7 @@ const variants = {
 function Card() {
   const [showEdit, setShowEdit] = useState(false);
   const [showTransfer, setShowTransfer] = useState(false);
+  const { navigate } = useRouter()
 
   const id = parseInt(location.pathname.slice(7));
   const { data, isLoading, error } = useQuery<CardType | null>({
@@ -56,6 +57,7 @@ function Card() {
   if (isLoading) return <h1 className="text-stone-200">loading...</h1>;
   if (!data || error)
     return <h1>An error has occured while trying to get the data</h1>;
+
 
   const edit = () => {
     setShowEdit(true);
@@ -71,7 +73,15 @@ function Card() {
     setShowTransfer(!true);
   };
 
-  const deleteCard = () => {};
+  const deleteCard = async () => {
+    const res = await fetch(`http://localhost:3000/cards/${id}`, {
+      method: "DELETE",
+    });
+    if (!res.ok) throw new Error("Could not delete card");
+    else navigate({
+      to: "/cards"
+    })
+  };
 
   if (data)
     return (

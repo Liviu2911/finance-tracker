@@ -24,7 +24,7 @@ function Transfer({ close, card }: Props) {
 
   const submit = async (e: React.FormEvent<HTMLElement>) => {
     e.preventDefault();
-    if (current === "Bank" && Number(amount) >= 0) {
+    if (current === "Bank") {
       const res = await fetch(`http://localhost:3000/cards/${card.id}`, {
         method: "PUT",
         body: JSON.stringify({
@@ -36,10 +36,36 @@ function Transfer({ close, card }: Props) {
         },
       });
       if (!res.ok) throw new Error("Could not transfer");
-      else {
-        console.log("success");
-        close();
-      }
+      else close();
+    } else if (current.balance >= Number(amount)) {
+      const res1 = await fetch(`http://localhost:3000/cards/${card.id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          ...card,
+          balance: Number(card.balance) + Number(amount),
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res1.ok)
+        throw new Error(
+          "Could not tranfer. Error occured at the receiving card"
+        );
+      const res2 = await fetch(`http://localhost:3000/cards/${current.id}`, {
+        method: "PUT",
+        body: JSON.stringify({
+          ...current,
+          balance: Number(current.balance) - Number(amount),
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (!res2.ok)
+        throw new Error("Could not transfer. Error occured at the giving card");
+
+      close();
     }
   };
 
